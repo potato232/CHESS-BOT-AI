@@ -16,6 +16,69 @@ white = ('♚', '♛', '♜', '♞ ', '♝', '♟')
 black = ('♔', '♕', '♖', '♘ ', '♗ ', '♙')
 
 
+def __def__(location, chess, color):
+    _chess_: Chess = chess
+    x, y = location
+
+    info = chess.info()[0]
+    _a = {'white': (info[0], info[2]),
+          'black': (info[0], info[1]), }[color]
+    a1, a2 = tuple(_a[0]), tuple(_a[1])
+
+    for row in move_rook_:
+        for c in row:
+            c = __potato__((c[0] + x, c[1] + y))
+            if c != '':
+                if c in a1:
+                    continue
+                elif c in a2:
+                    p: Potato = chess.get(c)
+                    if p.type == ROOK or p.type == QUEEN:
+                        return False
+                    break
+                break
+
+    for row in move_bishop:
+        for c in row:
+            c = __potato__((c[0] + x, c[1] + y))
+            if c != '':
+                if c in a1:
+                    continue
+                elif c in a2:
+                    p: Potato = chess.get(c)
+                    if p.type == BISHOP or p.type == QUEEN:
+                        return False
+                    break
+                break
+
+    for row in move_knight:
+        for c in row:
+            c = __potato__((c[0] + x, c[1] + y))
+            if c != '':
+                if c in a1:
+                    continue
+                elif c in a2:
+                    p: Potato = chess.get(c)
+                    if p.type == KNIGHT:
+                        return False
+                    break
+                break
+
+    move = {'white': ((-1+x, -1+y), (1+x, -1+y)),
+            'black': ((1+x, 1+y), (-1+x, 1 + y))}[color]
+    for i in __potato__(move[0]), __potato__(move[1]):
+        if i != '':
+            if i in a1:
+                continue
+            elif i in a2:
+                p: Potato = chess.get(i)
+                if p.type == PAWN:
+                    return False
+                break
+            break
+    return True
+
+
 def __potato__(link):
     out = str()
     c = {0: 'A', 1: 'B', 2: 'C', 3: 'D',
@@ -33,7 +96,7 @@ def __move__(location, move, chess, color, type_):
     _chess_: Chess = chess
     x, y = location
 
-    out = (list(), move)
+    out = (list(), move, color, type_)
 
     info = chess.info()[0]
 
@@ -91,7 +154,8 @@ class Chess:
         for data in (('white', 1, 1), ('black', 8, -1)):
             color, n1, n2 = data[0], data[1], data[2]
             for i in ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',):
-                self.add(i, Potato(PAWN, color, f'{i}{n1+n2}', self))
+                i = f'{i}{n1+n2}'
+                self.add(i, Potato(PAWN, color, i, self))
 
             self.add(f'A{n1}', Potato(ROOK, color, f'A{n1}', self))
             self.add(f'H{n1}', Potato(ROOK, color, f'H{n1}', self))
@@ -214,11 +278,16 @@ class Potato:
 def main():
     chess: Chess = Chess()
 
-    link = 'E5'
-    chess.add(link, Potato(KING, 'black', link, chess))
-    chess.add('C4', Potato(PAWN, 'white', 'C4', chess))
+    chess.add('E5', Potato(KING, 'white', 'E5', chess))
+    chess.add('D3', Potato(KNIGHT, 'black', 'E2', chess))
 
-    print(chess.get(link).info(chess))
+    x, y = 'E5'
+    x, y = char.get(x), int(y) - 1
+
+    k: Potato = chess.get('E5')
+    h = __def__((x, y), chess, k.color)
+    print(h)
+
     chess.show()
 
 
