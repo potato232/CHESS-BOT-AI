@@ -1,3 +1,6 @@
+from math import *
+
+
 def func1(array):
     array = list(array)
     array.sort()
@@ -64,3 +67,7 @@ def potato_(array):
            (len(array), max(array),  min(array)))
 
     return out
+
+
+if __name__ == '__main__':
+    sqrt(9)
