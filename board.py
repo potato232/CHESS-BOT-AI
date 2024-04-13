@@ -37,54 +37,6 @@ def location_2(link: tuple) -> str:
     return ''
 
 
-class Board:
-    def __init__(self):
-        self.board = CleanBoard
-        self.LastMovW, self.LastMovB = ('', '')
-
-    def get(self, link):
-        try:
-            return self.board[int(link[1])-1][char.get(link[0])]
-        except AttributeError:
-            return NOTING
-
-    def add(self, potato):
-        link = potato.link
-        self.board[link[1]][link[0]] = potato
-
-    def mov(self, old_link: str, new_link: str):
-        p = self.get(old_link)
-        if p.color == WHITE:
-            self.LastMovW = (old_link, new_link)
-        else:
-            self.LastMovB = (old_link, new_link)
-        p.mov(new_link)
-
-        self.board[int(new_link[1])-1][char.get(new_link[0])] = p
-        self.board[int(old_link[1])-1][char.get(old_link[0])] = NOTING
-
-    def prt(self):
-        for row in self.board:
-            sys.stdout.write(str(row)+'\n')
-        sys.stdout.write('\n')
-
-    def clr(self):
-        self.board = CleanBoard
-        for data in ((WHITE, 1, 1), (BLACK, 8, -1)):
-            color, n1, n2 = data[0], data[1], data[2]
-            for c in ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',):
-                self.add(Piece(PAWN, color, f'{c}{n1 + n2}'))
-            potato = (Piece(ROOK, color, f'A{n1}'), Piece(ROOK, color, f'H{n1}'),
-                      Piece(BISHOP, color, f'F{n1}'), Piece(BISHOP, color, f'C{n1}'),
-                      Piece(KNIGHT, color, f'G{n1}'), Piece(KNIGHT, color, f'B{n1}'),
-                      Piece(QUEEN, color, f'D{n1}'), Piece(KING, color, f'E{n1}'))
-            for p in potato:
-                self.add(p)
-
-    def out(self):
-        return self.board
-
-
 class Piece:
     def __init__(self, type_, color, link):
         self.skin = (white_pieces if color == WHITE else black_pieces if color == BLACK else '')[piece[type_]]
@@ -97,6 +49,54 @@ class Piece:
 
     def __repr__(self):
         return self.skin
+
+
+class Board:
+    def __init__(self):
+        self.board = CleanBoard
+        self.LastMovW, self.LastMovB = ('', '')
+
+    def get(self, link) -> Piece:
+        try:
+            return self.board[int(link[1])-1][char.get(link[0])]
+        except AttributeError:
+            pass
+
+    def add(self, potato) -> None:
+        link = potato.link
+        self.board[link[1]][link[0]] = potato
+
+    def mov(self, old_link: str, new_link: str) -> None:
+        p = self.get(old_link)
+        if p.color == WHITE:
+            self.LastMovW = (old_link, new_link)
+        else:
+            self.LastMovB = (old_link, new_link)
+        p.mov(new_link)
+
+        self.board[int(new_link[1])-1][char.get(new_link[0])] = p
+        self.board[int(old_link[1])-1][char.get(old_link[0])] = NOTING
+
+    def prt(self) -> None:
+        for row in self.board:
+            sys.stdout.write(str(row)+'\n')
+        sys.stdout.write('\n')
+
+    def clr(self) -> None:
+        self.board = CleanBoard
+        for data in ((WHITE, 1, 1), (BLACK, 8, -1)):
+            color, n1, n2 = data[0], data[1], data[2]
+            for c in ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',):
+                self.add(Piece(PAWN, color, f'{c}{n1 + n2}'))
+            potato = (Piece(ROOK, color, f'A{n1}'), Piece(ROOK, color, f'H{n1}'),
+                      Piece(BISHOP, color, f'F{n1}'), Piece(BISHOP, color, f'C{n1}'),
+                      Piece(KNIGHT, color, f'G{n1}'), Piece(KNIGHT, color, f'B{n1}'),
+                      Piece(QUEEN, color, f'D{n1}'), Piece(KING, color, f'E{n1}'))
+            for p in potato:
+                self.add(p)
+
+    def out(self) -> tuple:
+        return self.board
 
 
 # - test - #

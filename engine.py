@@ -41,19 +41,72 @@ def __def__(link: tuple, chess: Board, info: tuple, color: str) -> bool:
                    BLACK: ((+1, +1), (-1, +1),)}[color]
 
     for row in rook:
-        for i in row:
-            ...
+        for v in row:
+            v = v[0]+x, v[1]+y
+            if not ((v[0] > -1) and (v[0] < 9) and (v[1] > -1) and (v[1] < 9)):
+                break
+            if (v[0], v[1]) in l1:
+                break
+            if (v[0], v[1]) in l2:
+                p = __info__(chess.get(location_2((v[0], v[1]+1))))
+                if p[0] == QUEEN:
+                    return True
+                if p[0] == ROOK:
+                    return True
+                break
 
     for row in bishop:
-        for i in row:
-            ...
+        for v in row:
+            v = v[0] + x, v[1] + y
+            if not ((v[0] > -1) and (v[0] < 9) and (v[1] > -1) and (v[1] < 9)):
+                break
+            if (v[0], v[1]) in l1:
+                break
+            if (v[0], v[1]) in l2:
+                p = __info__(chess.get(location_2((v[0], v[1] + 1))))
+                if p[0] == QUEEN:
+                    return True
+                if p[0] == BISHOP:
+                    return True
+                break
 
     for row in knight:
-        for i in row:
-            ...
+        for v in row:
+            v = v[0] + x, v[1] + y
+            if not ((v[0] > -1) and (v[0] < 9) and (v[1] > -1) and (v[1] < 9)):
+                break
+            if (v[0], v[1]) in l1:
+                break
+            if (v[0], v[1]) in l2:
+                p = __info__(chess.get(location_2((v[0], v[1] + 1))))
+                if p[0] == KNIGHT:
+                    return True
+                break
 
-    for i in pawn_attack:
-        ...
+    for row in king:
+        for v in row:
+            v = v[0] + x, v[1] + y
+            if not ((v[0] > -1) and (v[0] < 9) and (v[1] > -1) and (v[1] < 9)):
+                break
+            if (v[0], v[1]) in l1:
+                break
+            if (v[0], v[1]) in l2:
+                p = __info__(chess.get(location_2((v[0], v[1] + 1))))
+                if p[0] == KING:
+                    return True
+                break
+
+    for v in pawn_attack:
+        v = v[0] + x, v[1] + y
+        if not ((v[0] > -1) and (v[0] < 9) and (v[1] > -1) and (v[1] < 9)):
+            break
+        if (v[0], v[1]) in l1:
+            break
+        if (v[0], v[1]) in l2:
+            p = __info__(chess.get(location_2((v[0], v[1] + 1))))
+            if p[0] == PAWN:
+                return True
+            break
 
     return False
 
@@ -74,12 +127,12 @@ def __king__(obj: tuple, chess: Board, info: tuple) -> tuple:
             continue
 
         if (x, y) in l2:
-            if __def__((x, y), chess, (p1, p2, l1, l2), obj[1]):
-                out.append(location_2((x, y+1)))
+            if not __def__((x, y), chess, (p1, p2, l1, l2), obj[1]):
+                out.append(location_2((x, y + 1)))
             continue
-        out.append(location_2((x, y+1)))
 
-    return tuple(out)   # just test
+        if not __def__((x, y), chess, (p1, p2, l1, l2), obj[1]):
+            out.append(location_2((x, y + 1)))
 
     # - output - #
     if __def__(obj[-1], chess, (p1, p2, l1, l2), obj[1]):
@@ -100,7 +153,7 @@ class Engine:
     def analyst(self):
         return self.move_generation()
 
-    def board_info(self):
+    def board_info(self) -> tuple:
         white, black = [], []
         k1, k2 = tuple(), tuple()
         for row in self.chess.board:
@@ -146,8 +199,8 @@ if __name__ == '__main__':
 
     board = Board()
 
-    board.add(Piece(KING, BLACK, 'E2'))
-    board.add(Piece(KING, WHITE, 'A2'))
+    board.add(Piece(KING, BLACK, 'C2'))
+    board.add(Piece(KING, WHITE, 'A1'))
     board.add(Piece(QUEEN, BLACK, 'A3'))
 
     board.prt()
