@@ -19,18 +19,104 @@ char = {'A': 0, 'B': 1, 'C': 2, 'D': 3,
 
 def __move__(obj: tuple, chess: Board, info: tuple) -> tuple:
     if obj[0] == KING:
-        return __king__(obj, chess, info)
+        return __king__(obj, chess, info)[0]
+
     p1, p2 = {WHITE: (info[0], info[1]), BLACK: (info[1], info[0])}[obj[1]]
+    l1, l2 = tuple(i[-1] for i in p1), tuple(i[-1] for i in p2)
     if obj[0] == QUEEN:
-        return tuple()
+        out = list()
+
+        for row in queen:
+            for v1, v2 in row:
+                v1, v2 = v1+obj[-1][0], v2+obj[-1][1]
+                if not ((v1 > -1) and (v1 < 8) and (v2 > -1) and (v2 < 8)):
+                    continue
+                if (v1, v2) in l1:
+                    break
+                if (v1, v2) in l2:
+                    out.append(location_2((v1, v2 + 1)))
+                    break
+                out.append(location_2((v1, v2+1)))
+
+        return tuple(out)
+
     if obj[0] == ROOK:
-        return tuple()
+        out = list()
+        for row in rook:
+            for v1, v2 in row:
+                v1, v2 = v1 + obj[-1][0], v2 + obj[-1][1]
+                if not ((v1 > -1) and (v1 < 8) and (v2 > -1) and (v2 < 8)):
+                    continue
+                if (v1, v2) in l1:
+                    break
+                if (v1, v2) in l2:
+                    out.append(location_2((v1, v2 + 1)))
+                    break
+                out.append(location_2((v1, v2 + 1)))
+        return tuple(out)
+
     if obj[0] == BISHOP:
-        return tuple()
-    if obj[0] == knight:
-        return tuple()
+        out = list()
+        for row in bishop:
+            for v1, v2 in row:
+                v1, v2 = v1 + obj[-1][0], v2 + obj[-1][1]
+                if not ((v1 > -1) and (v1 < 8) and (v2 > -1) and (v2 < 8)):
+                    continue
+                if (v1, v2) in l1:
+                    break
+                if (v1, v2) in l2:
+                    out.append(location_2((v1, v2 + 1)))
+                    break
+                out.append(location_2((v1, v2 + 1)))
+        return tuple(out)
+
+    if obj[0] == KNIGHT:
+        out = list()
+        for row in knight:
+            for v1, v2 in row:
+                v1, v2 = v1 + obj[-1][0], v2 + obj[-1][1]
+                if not ((v1 > -1) and (v1 < 8) and (v2 > -1) and (v2 < 8)):
+                    continue
+                if (v1, v2) in l1:
+                    break
+                if (v1, v2) in l2:
+                    out.append(location_2((v1, v2 + 1)))
+                    break
+                out.append(location_2((v1, v2 + 1)))
+        return tuple(out)
+
     if obj[0] == PAWN:
-        return tuple()
+        out = list()
+
+        move, attack = pawn_b, pawn_attack_b
+        if obj[1] == WHITE:
+            move, attack = pawn_w, pawn_attack_w
+
+        for v1, v2 in attack:
+            v1, v2 = v1 + obj[-1][0], v2 + obj[-1][1]
+            if not ((v1 > -1) and (v1 < 8) and (v2 > -1) and (v2 < 8)):
+                continue
+            if (v1, v2) in l2:
+                out.append(location_2((v1, v2)))
+
+        r = 0
+        for v1, v2 in move:
+            if r == 1:
+                if obj[2]:
+                    break
+            v1, v2 = v1+obj[-1][0], v2+obj[-1][1]
+
+            if not ((v1 > -1) and (v1 < 8) and (v2 > -1) and (v2 < 8)):
+                break
+            if (v1, v2) in l1:
+                break
+            if (v1, v2) in l2:
+                break
+
+            out.append(location_2((v1, v2+1)))
+            r += 1
+
+        return tuple(out)
 
 
 def __def__(link: tuple, chess: Board, info: tuple, color: str) -> bool:
@@ -113,14 +199,19 @@ def __def__(link: tuple, chess: Board, info: tuple, color: str) -> bool:
 
 def __king__(obj: tuple, chess: Board, info: tuple) -> tuple:
     # obj = type0, color1, is_move?2, link3(-1) #
-    out = list()
-    p1, p2 = {WHITE: (info[0], info[1]), BLACK: (info[1], info[0])}[obj[1]]
-    l1, l2 = tuple(i[-1] for i in p1), tuple(i[-1] for i in p2)
 
+    p1, p2 = info[1], info[0]
+    if obj == WHITE:
+        p1, p2 = (info[0], info[1])
+
+    l1 = tuple(i[-1] for i in p1)
+    l2 = tuple(i[-1] for i in p2)
+
+    out = list()
     for i in king:
         x, y = i[0][0]+obj[-1][0], i[0][1]+obj[-1][1]
 
-        if not ((x > -1) and (x < 9) and (y > -1) and (y < 9)):
+        if not ((x > -1) and (x < 8) and (y > -1) and (y < 8)):
             continue
 
         if (x, y) in l1:
@@ -128,11 +219,13 @@ def __king__(obj: tuple, chess: Board, info: tuple) -> tuple:
 
         if (x, y) in l2:
             if not __def__((x, y), chess, (p1, p2, l1, l2), obj[1]):
-                out.append(location_2((x, y + 1)))
+                link = location_2((x, y + 1))
+                out.append(link) if link != '' else ...
             continue
 
         if not __def__((x, y), chess, (p1, p2, l1, l2), obj[1]):
-            out.append(location_2((x, y + 1)))
+            link = location_2((x, y + 1))
+            out.append(link) if link != '' else ...
 
     # - output - #
     if __def__(obj[-1], chess, (p1, p2, l1, l2), obj[1]):
@@ -173,14 +266,15 @@ class Engine:
                 white.append(p) if p[1] == 'white' else black.append(p)
         return tuple(white), tuple(black), k1, k2
 
-    def move_generation(self):
+    def move_generation(self) -> tuple:
         white, black, king_w, king_b = self.board_info()
 
-        king_mov_w = __king__(king_w, self.chess, (white, black+(king_b, )))
-        print(king_mov_w)
+        king_mov_w = __king__(king_w, self.chess, (black+(king_b, ), white))
+        king_mov_b = __king__(king_b, self.chess, (white+(king_w, ), black))
 
-        return
-        output = list()
+        white_mov = (list(), list())
+        black_mov = (list(), list())
+
         for row in self.chess.board:
             if row == [NOTING]*8:
                 continue
@@ -188,25 +282,45 @@ class Engine:
             for item in row:
                 if item == NOTING:
                     continue
-                __piece_ = __info__(item)
-                __move__(__piece_, self.chess,
-                         (white+(king_w, ), black+(king_b, )))
-        return output
+
+                _piece_ = __info__(item)
+                _data_ = __move__(_piece_, self.chess, (white+(king_w, ), black+(king_b, )))
+
+                if _piece_[1] == WHITE:
+                    if len(_data_) > 0:
+                        white_mov[0].append((_piece_, _data_))
+                        continue
+                    white_mov[1].append((_piece_, _data_))
+                else:
+                    if len(_data_) > 0:
+                        black_mov[0].append((_piece_, _data_))
+                        continue
+                    black_mov[1].append((_piece_, _data_))
+        return king_mov_w, king_mov_b, white_mov, black_mov
+
+
+# - test - #
+def main():
+    board = Board()
+
+    board.clr()
+
+    board.prt()
+
+    data = Engine(board).analyst()
+    for i in data[2:]:
+        for hi in i:
+            for k in hi:
+                print(k)
+        print()
+    print(data[0])
+    print(data[1])
 
 
 if __name__ == '__main__':
     start = datetime.datetime.now()
 
-    board = Board()
-
-    board.add(Piece(KING, BLACK, 'C2'))
-    board.add(Piece(KING, WHITE, 'A1'))
-    board.add(Piece(QUEEN, BLACK, 'A3'))
-
-    board.prt()
-
-    analyst = Engine(board)
-    print(analyst.analyst())
+    main()
 
     _end_ = datetime.datetime.now()
     print(_end_-start)
