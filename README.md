@@ -1,6 +1,7 @@
 hi
 
-مصادر:
+مصادر المشروع:
+
 https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning
 
 https://www.freecodecamp.org/news/simple-chess-ai-step-by-step-1d55a9266977/
