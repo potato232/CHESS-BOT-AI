@@ -97,7 +97,7 @@ def __move__(obj: tuple, chess: Board, info: tuple) -> tuple:
             if not ((v1 > -1) and (v1 < 8) and (v2 > -1) and (v2 < 8)):
                 continue
             if (v1, v2) in l2:
-                out.append(location_2((v1, v2)))
+                out.append(location_2((v1, v2+1)))
 
         r = 0
         for v1, v2 in move:
@@ -238,13 +238,14 @@ def __info__(item: Piece):
 
 
 class Engine:
-    def __init__(self, chess, color=WHITE):
+    def __init__(self, chess, color=WHITE) -> None:
         self.chess: Board = chess
         self.color = color
         self.nothing = -1
 
-    def analyst(self):
-        return self.move_generation()
+    def analyst(self, data=None) -> int:
+        data = self.move_generation() if data is None else data
+        return 0
 
     def board_info(self) -> tuple:
         white, black = [], []
@@ -266,14 +267,22 @@ class Engine:
                 white.append(p) if p[1] == 'white' else black.append(p)
         return tuple(white), tuple(black), k1, k2
 
-    def move_generation(self) -> tuple:
+    def move_generation(self, s1=True, s2=True, s3=True, k=True) -> tuple:
         white, black, king_w, king_b = self.board_info()
 
-        king_mov_w = __king__(king_w, self.chess, (black+(king_b, ), white))
-        king_mov_b = __king__(king_b, self.chess, (white+(king_w, ), black))
+        king_mov_w, king_mov_b = tuple(), tuple()
+        if k:
+            king_mov_w = __king__(king_w, self.chess, (black+(king_b, ), white))
+            king_mov_b = __king__(king_b, self.chess, (white+(king_w, ), black))
 
-        white_mov = (list(), list())
-        black_mov = (list(), list())
+        white_mov1 = list()
+        black_mov1 = list()
+
+        white_mov2 = list(), list()
+        black_mov2 = list(), list()
+
+        white_mov3 = list(), list()
+        black_mov3 = list(), list()
 
         for row in self.chess.board:
             if row == [NOTING]*8:
@@ -287,16 +296,59 @@ class Engine:
                 _data_ = __move__(_piece_, self.chess, (white+(king_w, ), black+(king_b, )))
 
                 if _piece_[1] == WHITE:
-                    if len(_data_) > 0:
-                        white_mov[0].append((_piece_, _data_))
+                    white_mov1.append((_piece_, _data_)) if s1 else ...
+
+                    if not len(_data_) > 0:
+                        white_mov2[1].append((_piece_, _data_)) if s2 else ...
                         continue
-                    white_mov[1].append((_piece_, _data_))
-                else:
-                    if len(_data_) > 0:
-                        black_mov[0].append((_piece_, _data_))
+                    white_mov2[0].append((_piece_, _data_)) if s2 else ...
+
+                    if not s3:
                         continue
-                    black_mov[1].append((_piece_, _data_))
-        return king_mov_w, king_mov_b, white_mov, black_mov
+                    for hi in _data_:
+                        white_mov3[1].append(hi) if self.chess.get(hi) == '' else white_mov3[0].append(hi)
+
+                    continue
+
+                black_mov1.append((_piece_, _data_)) if s1 else ...
+
+                if not len(_data_) > 0:
+                    black_mov2[1].append((_piece_, _data_)) if s2 else ...
+                    continue
+                black_mov2[0].append((_piece_, _data_)) if s2 else ...
+
+                if not s3:
+                    continue
+                for hi in _data_:
+                    black_mov3[1].append(hi) if self.chess.get(hi) == '' else black_mov3[0].append(hi)
+
+        output = list()
+        output.append((king_mov_w, king_mov_b)) if k else ...
+        output.append((white_mov1, black_mov1)) if s1 else ...
+        output.append((white_mov2, black_mov2)) if s2 else ...
+        output.append((white_mov3, black_mov3)) if s3 else ...
+
+        return tuple(output)
+
+    def show(self, data=None) -> None:
+        d1, d2, d3, d4 = self.move_generation() if data is None else data
+
+        print('- 1 -')
+        for i in d1:
+            sys.stdout.write(f'{i}\n\n')
+
+        print('- 2 -')
+        for i in d3:
+            for x in i:
+                for y in x:
+                    sys.stdout.write(f'{y}\n')
+                print()
+
+        print('- 3 -')
+        for i in d4:
+            sys.stdout.write(f'{i}\n\n')
+
+        print(self.analyst((d1, d2, d3, d4)))
 
 
 # - test - #
@@ -305,16 +357,12 @@ def main():
 
     board.clr()
 
+    board.add(Piece(PAWN, BLACK, 'A3'))
+
     board.prt()
 
-    data = Engine(board).analyst()
-    for i in data[2:]:
-        for hi in i:
-            for k in hi:
-                print(k)
-        print()
-    print(data[0])
-    print(data[1])
+    potato = Engine(board)
+    potato.show()
 
 
 if __name__ == '__main__':
