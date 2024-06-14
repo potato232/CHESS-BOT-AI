@@ -1,113 +1,131 @@
-import sys
+from datetime import datetime
+from sys import stdout
+from potato import *
 
-# - ♚ ♛ ♝ ♞ ♜ ♟- #
-# - ♔ ♕ ♖ ♘ ♗ ♙ - #
-
-__all__ = ['KING', 'QUEEN', 'ROOK', 'BISHOP', 'KNIGHT', 'PAWN', 'NOTING',
-           'CleanBoard', 'WHITE', 'BLACK', 'Board', 'Piece',
-           'location_1', 'location_2']
-
-KING, QUEEN, ROOK, BISHOP, KNIGHT, PAWN, NOTING = ('King', 'Queen', 'Rook', 'Bishop', 'Knight', 'Pawn', '')
-WHITE, BLACK = 'white', 'black'
-
-CleanBoard = ([NOTING] * 8, [NOTING] * 8, [NOTING] * 8, [NOTING] * 8,
-              [NOTING] * 8, [NOTING] * 8, [NOTING] * 8, [NOTING] * 8,)
-
-power = {QUEEN: 8, ROOK: 5, BISHOP: 4, KNIGHT: 3, PAWN: 1, KING: 0}
-piece = {KING: 0, QUEEN: 1, ROOK: 2, KNIGHT: 3, BISHOP: 4, PAWN: 5}
-
-white_pieces = ('♚', '♛', '♜', '♞ ', '♝', '♟')
-black_pieces = ('♔', '♕', '♖', '♘ ', '♗ ', '♙')
-
-char = {'A': 0, 'B': 1, 'C': 2, 'D': 3,
-        'E': 4, 'F': 5, 'G': 6, 'H': 7}
-
-
-def location_1(link: str) -> tuple:
-    x, y = link
-    return char.get(x), int(y) - 1
-
-
-def location_2(link: tuple) -> str:
-    try:
-        x, y = link
-        return f"{'ABCDEFGH'[x]}{y}"
-    except IndexError:
-        pass
-    return ''
+__all__ = ["Board", "Piece"]
+__author__ = 'potato 232'
 
 
 class Piece:
-    def __init__(self, type_, color, link):
-        self.skin = (white_pieces if color == WHITE else black_pieces if color == BLACK else '')[piece[type_]]
-        self.color, self.type, self.move = color, type_, False
-        self.link = location_1(link)
+    def __init__(self, _type_, _color_, location) -> None:
+        piece = {KING: 0, QUEEN: 1, ROOK: 2, KNIGHT: 3, BISHOP: 4, PAWN: 5}
+        self.skin = white_pieces[piece[_type_]] if (_color_ == WHITE) else black_pieces[piece[_type_]]
 
-    def mov(self, link):
-        self.link = location_1(link)
-        self.move = True
+        self.type, self.color = _type_, _color_
+        self.location = location
+        self.is_move = False
 
-    def __repr__(self):
-        return self.skin
+        self.last_move = ''
+
+    def move(self, location: str) -> None:
+        self.last_move = self.location
+        self.location = location
+        self.is_move = True
+
+    def info(self) -> tuple:
+        output = (self.type, self.color, self.location, self.is_move)
+        return output
+
+    def __repr__(self) -> str:
+        return f"{self.skin}"
+
+
+def __pw__(_l_: str) -> Piece:
+    return Piece(PAWN, WHITE, _l_)
+
+
+def __pb__(_l_: str) -> Piece:
+    return Piece(PAWN, BLACK, _l_)
 
 
 class Board:
-    def __init__(self):
-        self.board = CleanBoard
-        self.LastMovW, self.LastMovB = ('', '')
+    boardType = type(clean_board())
 
-    def get(self, link) -> Piece:
-        try:
-            return self.board[int(link[1])-1][char.get(link[0])]
-        except AttributeError:
-            pass
+    def __init__(self) -> None:
+        self.last_move: str = ''
+        self.board = clean_board()
+        self.__board__ = clean_board()
 
-    def add(self, potato) -> None:
-        link = potato.link
-        self.board[link[1]][link[0]] = potato
+    def display(self) -> None:
+        for i in self.board:
+            stdout.write(f"{i}\n")
+        stdout.write('\n')
 
-    def mov(self, old_link: str, new_link: str) -> None:
-        p = self.get(old_link)
-        if p.color == WHITE:
-            self.LastMovW = (old_link, new_link)
-        else:
-            self.LastMovB = (old_link, new_link)
-        p.mov(new_link)
+    def clean(self) -> None:
+        self.board = clean_board()
 
-        self.board[int(new_link[1])-1][char.get(new_link[0])] = p
-        self.board[int(old_link[1])-1][char.get(old_link[0])] = NOTING
+        for h in ((WHITE, 2), (BLACK, 7)):
+            n = -1 if h[1] == 2 else 1
+            for le in letters:
+                self.add(Piece(PAWN, h[0], le+str(h[1])))
 
-    def prt(self) -> None:
-        for row in self.board:
-            sys.stdout.write(str(row)+'\n')
-        sys.stdout.write('\n')
+            for i in ((0, 1, 2), (-1, -2, -3)):
+                i1, i2, i3 = i
+                self.add(Piece(ROOK, h[0], f'{letters[i1]}{h[1]+n}'))
+                self.add(Piece(KNIGHT, h[0], f'{letters[i2]}{h[1]+n}'))
+                self.add(Piece(BISHOP, h[0], f'{letters[i3]}{h[1]+n}'))
 
-    def clr(self) -> None:
-        self.board = CleanBoard
-        for data in ((WHITE, 1, 1), (BLACK, 8, -1)):
-            color, n1, n2 = data[0], data[1], data[2]
-            for c in ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',):
-                self.add(Piece(PAWN, color, f'{c}{n1 + n2}'))
-            potato = (Piece(ROOK, color, f'A{n1}'), Piece(ROOK, color, f'H{n1}'),
-                      Piece(BISHOP, color, f'F{n1}'), Piece(BISHOP, color, f'C{n1}'),
-                      Piece(KNIGHT, color, f'G{n1}'), Piece(KNIGHT, color, f'B{n1}'),
-                      Piece(QUEEN, color, f'D{n1}'), Piece(KING, color, f'E{n1}'))
-            for p in potato:
-                self.add(p)
+            self.add(Piece(KING, h[0], f'E{h[1]+n}'))
+            self.add(Piece(QUEEN, h[0], f'D{h[1]+n}'))
 
-    def out(self) -> tuple:
+    def delete(self, location: str) -> None:
+        l_ = get_location(location)
+        self.board[l_[1]][l_[0]] = NOTING
+
+    def add(self, piece_: Piece) -> None:
+        l_ = get_location(piece_.location)
+        self.board[l_[1]][l_[0]] = piece_
+        self.__board__[l_[1]][l_[0]] = piece_.type
+
+    def get(self, location: str):
+        self.last_move = location
+        l_ = get_location(location)
+        return self.board[l_[1]][l_[0]]
+
+    def mov(self, l2: str, l1: str) -> None:
+        self.last_move = (l2, l1)
+        l1, l2 = get_location(l1), get_location(l2)
+        if self.board[l2[1]][l2[0]] != NOTING:
+            self.board[l2[1]][l2[0]].move(get_location(l1))
+        self.board[l1[1]][l1[0]] = self.board[l2[1]][l2[0]]
+        self.board[l2[1]][l2[0]] = NOTING
+
+        self.__board__[l1[1]][l1[0]] = self.__board__[l2[1]][l2[0]]
+        self.__board__[l2[1]][l2[0]] = NOTING
+
+    def out(self) -> boardType:
         return self.board
 
+    def out_(self) -> boardType:
+        return self.__board__
 
-# - test - #
-if __name__ == '__main__':
-    from datetime import datetime
+    def test(self):
+        print(self.__board__)
+
+        print('\n', clean_board())
+
+
+# - test Board & Piece - #
+def __test__() -> None:
     start = datetime.now()
 
-    chess = Board()
-    chess.clr()
-    chess.mov('E2', 'E4')
-    chess.prt()
+    # - test Piece - #
+    _test_1 = Piece(PAWN, WHITE, "A2")
+    _test_1.move('A4')
+    _test_1.info()
 
-    _end_ = datetime.now()
-    print(_end_-start)
+    # - test Board - #
+    _test_2 = Board()
+    _test_2.clean()
+    _test_2.delete("A1")
+    _test_2.add(Piece(PAWN, WHITE, "E5"))
+    _test_2.mov("D2", "D3")
+
+    _test_2.display()
+
+    # - #
+    print(datetime.now()-start)
+
+
+if __name__ == '__main__':
+    __test__()
