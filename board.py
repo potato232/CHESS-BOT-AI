@@ -1,41 +1,14 @@
 from datetime import datetime
 from sys import stdout
-from potato import *
 
-__all__ = ["Board", "Piece"]
+from potato import *
+from piece import *
+
+__all__ = ["Board", "board_info", "copy_board"]
 __author__ = 'potato 232'
 
-
-class Piece:
-    def __init__(self, _type_, _color_, location) -> None:
-        piece = {KING: 0, QUEEN: 1, ROOK: 2, KNIGHT: 3, BISHOP: 4, PAWN: 5}
-        self.skin = white_pieces[piece[_type_]] if (_color_ == WHITE) else black_pieces[piece[_type_]]
-
-        self.type, self.color = _type_, _color_
-        self.location = location
-        self.is_move = False
-
-        self.last_move = ''
-
-    def move(self, location: str) -> None:
-        self.last_move = self.location
-        self.location = location
-        self.is_move = True
-
-    def info(self) -> tuple:
-        output = (self.type, self.color, self.location, self.is_move)
-        return output
-
-    def __repr__(self) -> str:
-        return f"{self.skin}"
-
-
-def __pw__(_l_: str) -> Piece:
-    return Piece(PAWN, WHITE, _l_)
-
-
-def __pb__(_l_: str) -> Piece:
-    return Piece(PAWN, BLACK, _l_)
+__pw__ = (lambda _l_: Piece(PAWN, WHITE, _l_))  # (link: str) -> White Piece in link
+__pb__ = (lambda _l_: Piece(PAWN, BLACK, _l_))  # (link: str) -> Black Piece in link
 
 
 class Board:
@@ -105,26 +78,73 @@ class Board:
         print('\n', clean_board())
 
 
-# - test Board & Piece - #
+def board_info(board: Board) -> tuple:
+    # - get pieces - #
+
+    # o1 = white pieces
+    # o2 = black pieces
+
+    o1, o2 = [], []
+
+    for row in board.out():
+        if row == [NOTING] * 8:
+            continue
+
+        for i in row:
+            if i == NOTING:
+                continue
+
+            if i.color == WHITE:
+                o1.append(i)
+                continue
+            o2.append(i)
+    return tuple(o1), tuple(o2)
+
+
+def copy_board(chess: Board) -> Board:
+    """
+    I cannot copy a list simply by typing (list2 = list1)
+    because list2 will only be a reference to list1
+    """
+
+    board = Board()
+    board.board, board.__board__ = list(board.board), list(board.__board__)
+
+    for i in range(len(board.board)):
+        board.board[i] = copy_list(chess.board[i])
+        board.__board__[i] = copy_list(chess.__board__[i])
+
+    board.board, board.__board__ = tuple(board.board), tuple(board.__board__)
+    return board
+
+
+# - test - #
 def __test__() -> None:
     start = datetime.now()
 
     # - test Piece - #
-    _test_1 = Piece(PAWN, WHITE, "A2")
-    _test_1.move('A4')
-    _test_1.info()
+    piece_test = Piece(PAWN, WHITE, "A2")
+
+    piece_test.move('A4')
+    piece_test.info()
 
     # - test Board - #
-    _test_2 = Board()
-    _test_2.clean()
-    _test_2.delete("A1")
-    _test_2.add(Piece(PAWN, WHITE, "E5"))
-    _test_2.mov("D2", "D3")
+    board_test = Board()
 
-    _test_2.display()
+    board_test.clean()
+
+    board_test.delete("A1")
+    board_test.add(Piece(PAWN, WHITE, "E5"))
+    board_test.mov("D2", "D3")
+
+    board_test.display()
+
+    # - test board_info - #
+    info1 = board_info(board_test)
+    print(" - info 1 - \n", info1, '\n')
 
     # - #
-    print(datetime.now()-start)
+    stdout.write(str(datetime.now()-start))
 
 
 if __name__ == '__main__':

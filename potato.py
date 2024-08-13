@@ -7,10 +7,6 @@ def get_location(_l):
     return char.get(_l[0]), int(_l[1]) - 1
 
 
-def reverse_array(array: tuple) -> tuple:
-    return tuple([array[-(n+1)] for n in range(len(array))])
-
-
 def sort_array(array: tuple) -> tuple:
     array = list(array)
     array.sort()
@@ -18,7 +14,9 @@ def sort_array(array: tuple) -> tuple:
 
 
 RandomArray = (lambda r1, r2: [randint(1, r1) for _ in [0]*randint(1, r2)])
+ReverseArray = (lambda array: tuple([array[-(n+1)] for n in range(len(array))]))
 printArray2D = (lambda array: [[print(k) for k in i] for i in array])
+copy_list = (lambda mylist: [i for i in mylist])
 func = (lambda array: sum(array) / len(array))
 
 
@@ -45,10 +43,6 @@ char = {'A': 0, 'B': 1, 'C': 2, 'D': 3,
         'E': 4, 'F': 5, 'G': 6, 'H': 7}
 
 letters = "ABCDEFGH"
-
-evaluation = {
-    KING: 900, QUEEN: 90, ROOK: 50, KNIGHT: 30, BISHOP: 35, PAWN: 10,
-}
 
 # - #
 kingMove = ((+1, +1), (+0, 1), (-1, +1), (+1, +0),
@@ -78,6 +72,16 @@ pawnMoveB, pawnAttackB = ((0, -1), (0, -2)), ((-1, -1), (1, -1))
 
 # - #
 
+strengthWhite = {
+    KING: +90.00, QUEEN: +9.00, ROOK: +5.0,
+    KNIGHT: +3.0, BISHOP: +3.5, PAWN: +1.0,
+}
+
+strengthBlack = {
+    KING: -90.00, QUEEN: -9.00, ROOK: -5.0,
+    KNIGHT: -3.0, BISHOP: -3.5, PAWN: -1.0,
+}
+
 pawnEvalWhite = (
         (0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0),
         (5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0),
@@ -89,7 +93,7 @@ pawnEvalWhite = (
         (0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0),
 )
 
-pawnEvalBlack = reverse_array(pawnEvalWhite)
+pawnEvalBlack = ReverseArray(pawnEvalWhite)
 
 knightEval = (
         (-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0),
@@ -113,20 +117,20 @@ bishopEvalWhite = (
         (-2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0),
 )
 
-bishopEvalBlack = reverse_array(bishopEvalWhite)
+bishopEvalBlack = ReverseArray(bishopEvalWhite)
 
 rookEvalWhite = (
-        (+0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0),
-        (+0.5,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  0.5),
+        (+0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, +0.0),
+        (+0.5,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0, +0.5),
         (-0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5),
         (-0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5),
         (-0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5),
         (-0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5),
         (-0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5),
-        (+0.0,   0.0, 0.0,  0.5,  0.5,  0.0,  0.0,  0.0),
+        (+0.0,  0.0, 0.0,  0.5,  0.5,  0.0,  0.0,  +0.0),
 )
 
-rookEvalBlack = reverse_array(rookEvalWhite)
+rookEvalBlack = ReverseArray(rookEvalWhite)
 
 evalQueen = (
         (-2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0),
@@ -150,12 +154,13 @@ kingEvalWhite = (
         (+2.0,  3.0,  1.0,  0.0,  0.0,  1.0,  3.0,  2.0),
 )
 
-kingEvalBlack = reverse_array(kingEvalWhite)
+kingEvalBlack = ReverseArray(kingEvalWhite)
 
 
 # - test - #
 def __test__():
-    pass
+    for i in rookEvalBlack:
+        print(i)
 
 
 if __name__ == '__main__':
