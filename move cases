@@ -1,0 +1,38 @@
+
+
+knight & bishop & rook & queen{
+    MOVE, (x, y), (new x, new y)
+}
+
+
+king{
+    case1(
+        MOVE, (x, y), (new x, new y)
+    )
+    case2(
+        MOVE, (x, y), (new x, new y)
+        MOVE, (x, y), (new x, new y)
+    )
+}
+
+
+pawn{
+    case1(
+        MOVE, (x, y), (new x, new y),
+    )
+
+    case2(
+        MOVE, (x, y), (new x, new y),
+        DEL, x, y-1
+    )
+
+    case3(
+        MOVE, (x, y), (new x, new y),
+        DEL, x, y
+    )
+
+    case4(
+        MOVE, (x, y), (new x, new y),
+        PUSH, color, type, (x, y)),
+    )
+}
