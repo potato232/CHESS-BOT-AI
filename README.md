@@ -11,6 +11,9 @@ I started working on the project starting on — 02/06/2024
 رابط يوضح طريقة عمل محركات الشطرنج:
 
 https://www.freecodecamp.org/news/simple-chess-ai-step-by-step-1d55a9266977/
+
+https://chessify.me/blog/chess-engine-evaluation
+
 - - - -
 رابط يوضح الخوارزميات المستخدمة وطريقة عملها:
 
