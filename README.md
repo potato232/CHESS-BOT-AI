@@ -7,7 +7,7 @@ I started working on the project starting on — 02/06/2024
 - - - -
 بعض مصادر البسيطة للمشروع لو حابب تفهم المشروع بشكل اكبر 
 ممكن تقرأ السورس او تتواصل معي لو حبيت تعرف اكثر
-- - - -
+
 رابط يوضح طريقة عمل محركات الشطرنج:
 
 https://www.freecodecamp.org/news/simple-chess-ai-step-by-step-1d55a9266977/
