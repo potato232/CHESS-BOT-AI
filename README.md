@@ -1,15 +1,17 @@
-potato mini chess bot AI
+potatoFish is mini chess bot AI
 just AI project playing chess
+I started working on the project starting on — 02/06/2024
+- - - -
+بوتيتو فيش هو بوت ذكاء صناعي وضيفته يلعب شطرنج بدأت العمل عليه من 2024/6/02
+بعض مصادر البسيطة للمشروع لو حابب تفهم المشروع بشكل اكبر 
+ممكن تقرأ السورس او تتواصل معي لو حبيت تعرف اكثر
 
-
-بعض مصادر المشروع لو حابب تفهم المشروع بشكل اكبر:
-
-https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning
-
+رابط يوضح طريقة عمل محركات الشطرنج:
 https://www.freecodecamp.org/news/simple-chess-ai-step-by-step-1d55a9266977/
 
-https://ar.wikipedia.org/wiki/%D9%85%D9%8A%D9%86%D9%8A_%D9%85%D8%A7%D9%83%D8%B3
-
+رابط يوضح الخوارزميات المستخدمة وطريقة عملها:
 https://en.wikipedia.org/wiki/Minimax
+https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning
 
+مشروع مشابه:
 https://www.youtube.com/watch?v=oAkSNssP4Ug
