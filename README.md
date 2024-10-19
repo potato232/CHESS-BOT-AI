@@ -1,5 +1,6 @@
 potatoFish is mini chess bot AI
-just AI project playing chess
+just AI project playing chess.
+
 I started working on the project starting on — 02/06/2024
 - - - -
 بوتيتو فيش هو بوت ذكاء صناعي وضيفته يلعب شطرنج بدأت العمل عليه من 2024/6/02
