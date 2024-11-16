@@ -1,5 +1,5 @@
-potatoFish is mini chess bot AI, 
-just AI project playing chess.
+potatoFish is mini chess bot, 
+just bot project playing chess.
 
 I started working on the project starting on — 02/06/2024
 - - - -
