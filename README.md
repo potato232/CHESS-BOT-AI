@@ -21,6 +21,6 @@ https://en.wikipedia.org/wiki/Minimax
 
 https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning
 - - - -
-فيديو لمشروع مشابه لشخص اخر:
+فيديو لمشروع عربي مشابه:
 
 https://www.youtube.com/watch?v=oAkSNssP4Ug
